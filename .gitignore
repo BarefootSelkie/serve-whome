@@ -1,3 +1,13 @@
+# Personal settings
+config-pkts.yaml
+
+# Logging
+*.log
+
+# MacOS Nonsense
+.DS*
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
