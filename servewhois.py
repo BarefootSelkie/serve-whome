@@ -15,11 +15,11 @@ import datetime
 import pktools
 
 # Logging setup
-logging.basicConfig(format="%(asctime)s : %(message)s", filename="pktserve.log", encoding='utf-8', level=logging.INFO)
+logging.basicConfig(format="%(asctime)s : %(message)s", filename="servewhois.log", encoding='utf-8', level=logging.INFO)
 
 # Load settings
 try:
-    with open("./config-pkts.yaml", "r") as read_file:
+    with open("./config-servewhois.yaml", "r") as read_file:
         config = yaml.safe_load(read_file)
 except:
     logging.critical("Settings file missing")
