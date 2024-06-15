@@ -12,7 +12,7 @@ import threading
 import time
 import argparse
 import datetime
-import pktools
+from pktools import pktools
 
 # Logging setup
 logging.basicConfig(format="%(asctime)s : %(message)s", filename="servewhois.log", encoding='utf-8', level=logging.INFO)
@@ -231,7 +231,7 @@ class pktState:
 
             if (len(switches) > 1):
                 # 1) Check to see if a switch has occured
-                if ("id" not in self.lastSwitch) or (switches[0].strip() != self.lastSwitch["id"].strip()):
+                if ("id" not in self.lastSwitch) or (switches[0]["id"] != self.lastSwitch["id"]):
                     switchOccurred = True
                     self.lastSwitch = switches[0]
                     with open(self.dataLocation + "/lastSwitch.json", "w") as output_file:
@@ -405,4 +405,4 @@ while True:
     # At 4:00 run an update
 
     time.sleep(10)
-    print("running")
+#    print("running")

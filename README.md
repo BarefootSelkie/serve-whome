@@ -18,7 +18,7 @@ Data files are stored locally in **~/.servewhois**
 
 **pkSystem** data pulled from PluralKit about the system itself (e.g. system name) [see PluralKit documentation](https://pluralkit.me/api/models/)
 
-## Implimented functions
+## Implemented functions
 
 pullMemberSeen()
 
