@@ -42,7 +42,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         return
     
 def startWebServer():
-    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+    address = socket.gethostbyname(socket.gethostname() + ".local")
+    with socketserver.TCPServer((address, PORT), Handler) as httpd:
         httpd.serve_forever()
 
 # argparse setup
@@ -294,7 +295,7 @@ if not os.path.exists(os.path.expanduser(config["data"] + "/memberSeen.json")):
 # Start the web server
 try:
     threading.Thread(target=startWebServer, daemon=True).start()
-    hostname = socket.gethostname()
+    hostname = socket.gethostname() + ".local"
     ipAdr = socket.gethostbyname(hostname)
     message = "pktserve up\n" + "http://" + str(ipAdr) + ":" + str(PORT)
     sendMessage(message, "full")
