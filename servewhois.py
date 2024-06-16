@@ -350,6 +350,10 @@ while True:
     if minutePast != time.localtime()[4]:
         minutePast = time.localtime()[4]
 
+        # At 4:00 run an update
+        if time.localtime()[4] == 0 and time.localtime()[3] == 4:
+            updateRequired = True
+
         if ( time.localtime()[4] % config["updateInterval"] ) == 0:
 
             # If pullPeriodic returns true we need to send Discord messages
@@ -407,7 +411,7 @@ while True:
                         
                         sendMessage(message, "filtered")
                         
-    # At 4:00 run an update
+    
 
     time.sleep(10)
 #    print("running")
