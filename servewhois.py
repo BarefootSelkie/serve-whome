@@ -102,6 +102,12 @@ class pktState:
     # Given a batch of switches, updates the MemberSeen data
     # Returns: timestamp of the oldest switch that was input
     def updateMemberSeen(self, switches):
+
+        # Ensure the MemberSeen object has an entry for all system members
+        for member in self.pkMembers:
+            if member not in self.memberSeen.keys():
+                self.memberSeen[member["id"].strip()] = {"lastIn": zeropoint, "lastOut": zeropoint}  
+
         # Switches are currently in reverse chronological order - make them in chronological order instead
         switches.reverse()
 
@@ -194,10 +200,6 @@ class pktState:
         # Keep track of where we have currently got up to
         pointer = datetime.datetime.now().isoformat(timespec="seconds") + "Z"
 
-        # Initiailise the MemberSeen object so that we have an entry for all system members
-        for member in self.pkMembers:  
-            self.memberSeen[member["id"].strip()] = {"lastIn": zeropoint, "lastOut": zeropoint}  
-
         # Keep requesting batches of switches from pluralkit
         while True:
             try:
@@ -233,12 +235,21 @@ class pktState:
             if (len(switches) > 1):
                 # 1) Check to see if a switch has occured
                 if ("id" not in self.lastSwitch) or (switches[0]["id"] != self.lastSwitch["id"]):
+                    # 2) If it has, update the last switch file
                     switchOccurred = True
                     self.lastSwitch = switches[0]
                     with open(self.dataLocation + "/lastSwitch.json", "w") as output_file:
                         output_file.write(json.dumps(self.lastSwitch))
 
-                    # 3) Update the information about when fronters were last seen      
+                    # 3) Check whether there are any new members we don't know about yet
+                    for switch in switches:
+                        for member in switch["members"]:
+                            if member not in self.memberSeen.keys():
+                                logging.info("Unable to find member, rebuilding member data")
+                                self.buildPkMembers()
+                                continue
+
+                    # 4) Update the information about when fronters were last seen      
                     self.updateMemberSeen(switches)
                     with open(self.dataLocation + "/memberSeen.json", "w") as output_file:
                         output_file.write(json.dumps(self.memberSeen))
@@ -340,18 +351,15 @@ while True:
         minutePast = time.localtime()[4]
 
         if ( time.localtime()[4] % config["updateInterval"] ) == 0:
-            updateNeeded = state.pullPeriodic()
 
-            # If pullPeriodic returns true update the screen and unset updateNeeded
-            if updateNeeded:
+            # If pullPeriodic returns true we need to send Discord messages
+            if state.pullPeriodic():
                 
                 # Check if not switched out
                 if len(state.lastSwitch["members"]) > 0:
 
                     # Build and send full message
                     if config["discord"]["full"]["enabled"]:
-                        
-                        
                                             
                         index = len(state.lastSwitch["members"])
                         message = "Hi, "
@@ -399,10 +407,6 @@ while True:
                         
                         sendMessage(message, "filtered")
                         
-                updateNeeded = False
-
-    
-
     # At 4:00 run an update
 
     time.sleep(10)
