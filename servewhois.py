@@ -105,7 +105,7 @@ class pktState:
 
         # Ensure the MemberSeen object has an entry for all system members
         for member in self.pkMembers:
-            if member not in self.memberSeen.keys():
+            if member["id"].strip() not in self.memberSeen.keys():
                 self.memberSeen[member["id"].strip()] = {"lastIn": zeropoint, "lastOut": zeropoint}  
 
         # Switches are currently in reverse chronological order - make them in chronological order instead
