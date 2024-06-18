@@ -333,10 +333,15 @@ while True:
     # If an update is required or forced by arg do the update
     if updateRequired:
         logging.info("Updating pkSystem, pkMembers, pkGroups, lastSwtich")
+        time.sleep(1)
         state.buildPkSystem()
+        time.sleep(1)
         state.buildPkMembers()
+        time.sleep(1)
         state.buildPkGroups()
+        time.sleep(1)
         state.buildLastSwitch()
+        time.sleep(1)
         updateRequired = False
         reloadRequired = True
 
