@@ -68,7 +68,7 @@ class pktState:
             with open(self.dataLocation + "/pkSystem.json", "r") as lsFile:
                 self.pkSystem = json.load(lsFile)
         except:
-            logging.critical("Member data missing")
+            logging.critical("System data missing")
             exit()
     def loadPkMembers(self):
         try:
