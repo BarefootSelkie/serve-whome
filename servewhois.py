@@ -348,7 +348,7 @@ while True:
         state.buildLastSwitch()
         time.sleep(1)
         updateRequired = False
-        #reloadRequired = True
+        reloadRequired = True
 
     # If a rebuild is required or forced by arg do the update
     if rebuildRequired:
