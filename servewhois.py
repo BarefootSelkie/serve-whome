@@ -67,36 +67,41 @@ class pktState:
         try:
             with open(self.dataLocation + "/pkSystem.json", "r") as lsFile:
                 self.pkSystem = json.load(lsFile)
-        except:
+        except Exception as e:
             logging.critical("System data missing")
+            logging.critical(e)
             exit()
     def loadPkMembers(self):
         try:
             with open(self.dataLocation + "/pkMembers.json", "r") as lsFile:
                 self.pkMembers = json.load(lsFile)
-        except:
+        except Exception as e:
             logging.critical("Member data missing")
+            logging.critical(e)
             exit()
     def loadPkGroups(self):
         try:
             with open(self.dataLocation + "/pkGroups.json", "r") as lsFile:
                 self.pkGroups = json.load(lsFile)
-        except:
+        except Exception as e:
             logging.critical("Group data missing")
+            logging.critical(e)
             exit()
     def loadLastSwitch(self):
         try:
             with open(self.dataLocation + "/lastSwitch.json", "r") as lsFile:
                 self.lastSwitch = json.load(lsFile)
-        except:
+        except Exception as e:
             logging.critical("Last switch data missing")
+            logging.critical(e)
             exit()
     def loadMemberSeen(self):
         try:
             with open(self.dataLocation + "/memberSeen.json", "r") as lsFile:
                 self.memberSeen = json.load(lsFile)
-        except:
+        except Exception as e:
             logging.critical("Last seen data missing")
+            logging.critical(e)
             exit()
 
     # Given a batch of switches, updates the MemberSeen data
