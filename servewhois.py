@@ -15,7 +15,7 @@ import datetime
 from pktools import pktools
 
 # Logging setup
-logging.basicConfig(format="%(asctime)s : %(message)s", filename="servewhois.log", encoding='utf-8', level=logging.INFO)
+logging.basicConfig(format="%(asctime)s : %(message)s", filename="servewhois.log", encoding='utf-8', level=logging.WARN)
 
 # Load settings
 try:
@@ -111,55 +111,55 @@ class pktState:
 
     # Get the raw system data from the PluralKit API and store it to memory
     def getPkSystem(self):
-        logging.info("( buildPkSystem )")
+        logging.info("( getPkSystem )")
         try:
             r = requests.get("https://api.pluralkit.me/v2/systems/" + systemid, headers={'Authorization':pktoken})
             self.pkSystem = json.loads(r.text)
         except Exception as e:
-            logging.warning("PluralKit requests.get ( buildPkSystem )")
+            logging.warning("PluralKit requests.get ( getPkSystem )")
             logging.warning(e) 
 
     def savePkSystem(self):
         with open(os.path.expanduser(config["data"]) + "/pkSystem.json", "w") as systemFile:
             systemFile.write(json.dumps(self.pkSystem))
 
-    # Get the raw data about system members from the PluralKit API and save it to disk
+    # Get the raw data about system members from the PluralKit API
     def getPkMembers(self):
-        logging.info("( buildPkMembers )")
+        logging.info("( getPkMembers )")
         try:
             r = requests.get("https://api.pluralkit.me/v2/systems/" + systemid + "/members", headers={'Authorization':pktoken})
             self.pkMembers = json.loads(r.text)
         except Exception as e:
-            logging.warning("PluralKit requests.get ( buildPkMembers )")
+            logging.warning("PluralKit requests.get ( getPkMembers )")
             logging.warning(e) 
     
     def savePkMembers(self):
          with open(os.path.expanduser(config["data"]) + "/pkMembers.json", "w") as memberFile:
             memberFile.write(json.dumps(self.pkMembers))
 
-    # Get the raw data about system groups from the PluralKit API and save it to disk
+    # Get the raw data about system groups from the PluralKit API
     def getPkGroups(self):
-        logging.info("( buildPkGroups )")
+        logging.info("( getPkGroups )")
         try:
             r = requests.get("https://api.pluralkit.me/v2/systems/" + systemid + "/groups?with_members=true", headers={'Authorization':pktoken})
             self.pkGroups = json.loads(r.text)
         except Exception as e:
-            logging.warning("PluralKit requests.get ( buildPkGroups )")
+            logging.warning("PluralKit requests.get ( getPkGroups )")
             logging.warning(e)
 
     def savePkGroups(self):
         with open(os.path.expanduser(config["data"]) + "/pkGroups.json", "w") as groupsFile:
             groupsFile.write(json.dumps(self.pkGroups))
 
-    # Get the raw data about the most recent switch from the PluralKit API and save it to disk
+    # Get the raw data about the most recent switch from the PluralKit API
     def getLastSwitch(self):
-        logging.info("( buildLastSwitch )")
+        logging.info("( getLastSwitch )")
         try:
             r = requests.get("https://api.pluralkit.me/v2/systems/" + systemid + "/switches?limit=1", headers={'Authorization':pktoken})
             switches = r.json()
             self.lastSwitch = switches[0]
         except Exception as e:
-            logging.warning("PluralKit requests.get ( buildPkSwitch )")
+            logging.warning("PluralKit requests.get ( getPkSwitch )")
             logging.warning(e)
 
     def saveLastSwitch(self):
