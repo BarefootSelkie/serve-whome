@@ -254,8 +254,8 @@ class pktState:
         # 3) Create the list of members to output
         memberList = []
         for member in self.pkMembers:
-            card = cardlookup[member["uuid"]]
-            element = elementlookup[member["uuid"]]
+            card = cardlookup[member["uuid"]] if member["uuid"] in cardlookup else None 
+            element = elementlookup[member["uuid"]] if member["uuid"] in elementlookup else None 
             memberList.append({
                 "memberName": member["name"],
                 "memberId": member["id"],
