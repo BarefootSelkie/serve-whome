@@ -71,6 +71,7 @@ class pktState:
             logging.critical("System data missing")
             logging.critical(e)
             exit()
+    
     def loadPkMembers(self):
         try:
             with open(self.dataLocation + "/pkMembers.json", "r") as lsFile:
@@ -79,6 +80,7 @@ class pktState:
             logging.critical("Member data missing")
             logging.critical(e)
             exit()
+    
     def loadPkGroups(self):
         try:
             with open(self.dataLocation + "/pkGroups.json", "r") as lsFile:
@@ -87,6 +89,7 @@ class pktState:
             logging.critical("Group data missing")
             logging.critical(e)
             exit()
+    
     def loadLastSwitch(self):
         try:
             with open(self.dataLocation + "/lastSwitch.json", "r") as lsFile:
@@ -95,6 +98,7 @@ class pktState:
             logging.critical("Last switch data missing")
             logging.critical(e)
             exit()
+    
     def loadMemberSeen(self):
         try:
             with open(self.dataLocation + "/memberSeen.json", "r") as lsFile:
@@ -224,7 +228,49 @@ class pktState:
         # Update the memberSeen file on the disk
         with open(self.dataLocation + "/memberSeen.json", "w") as output_file:
             output_file.write(json.dumps(self.memberSeen))
-            ### Periodic data update functions ###
+
+    def getGroupById(self, id):
+        for group in state.pkGroups:
+            if ["id"].strip() == id:
+                return group
+        return None
+
+    def buildMemberList(self):
+
+        # 1) Make a dictionary (memberId -> card)
+        cardlookup = {}
+        for groupId in config["groups"]["cards"]:
+            card = self.getGroupById(groupId)
+            for memberId in card["members"]:
+                cardlookup[memberId] = card
+
+        # 2) Make a dictionary (member -> element)
+        elementlookup = {}
+        for groupId in config["groups"]["elements"]:
+            element = self.getGroupById(groupId)
+            for memberId in element["members"]:
+                elementlookup[memberId] = element
+
+        # 3) Create the list of members to output
+        memberList = []
+        for member in self.pkMembers:
+            card = cardlookup[member["uuid"]]
+            element = elementlookup[member["uuid"]]
+            memberList.append({
+                "memberName": member["name"],
+                "memberId": member["id"],
+                "memberPronouns": member["pronouns"],
+                "cardsName": card["name"] if card is not None else "",
+                "cardsId": card["id"] if card is not None else "",
+                "elementName": element["name"] if element is not None else "",
+                "elementId": element["id"] if element is not None else ""
+            })
+
+        # 4) Write the members list to a file
+        with open(self.dataLocation + "/memberList.json", "w") as output_file:
+            output_file.write(json.dumps(memberList))
+
+### Periodic data update functions ###
 
     # Update information about current fronters and when they most recently switched in and out
     # Returns: True if a switch has happened since last update, False otherwise
@@ -307,6 +353,8 @@ if not os.path.exists(os.path.expanduser(config["data"] + "/lastSwitch.json")):
     state.buildLastSwitch()
 if not os.path.exists(os.path.expanduser(config["data"] + "/memberSeen.json")):
     state.buildMemberSeen()
+if not os.path.exists(os.path.expanduser(config["data"] + "/memberList.json")):
+    state.buildMemberList()
 
 # Start the web server
 try:
@@ -360,7 +408,7 @@ while True:
     if minutePast != time.localtime()[4]:
         minutePast = time.localtime()[4]
 
-        # At 4:00 run an update
+        # At 04:00 run an update
         if time.localtime()[4] == 0 and time.localtime()[3] == 4:
             updateRequired = True
 
