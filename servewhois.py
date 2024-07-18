@@ -231,7 +231,7 @@ class pktState:
 
     def getGroupById(self, id):
         for group in state.pkGroups:
-            if ["id"].strip() == id:
+            if group["id"].strip() == id:
                 return group
         return None
 
