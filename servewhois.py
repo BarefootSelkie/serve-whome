@@ -365,10 +365,10 @@ else:
     state.loadPkMembers()
 
 if not os.path.exists(os.path.expanduser(config["data"] + "/pkGroups.json")) or rebuildRequired:
-    state.buildPkGroups()
-    state.savePkMembers()
+    state.getPkGroups()
+    state.savePkGroups()
 else:
-    state.loadPkMembers()    
+    state.loadPkGroups()    
 if not os.path.exists(os.path.expanduser(config["data"] + "/lastSwitch.json")) or rebuildRequired:
     state.getLastSwitch()
     state.saveLastSwitch()
