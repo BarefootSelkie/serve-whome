@@ -392,7 +392,7 @@ except Exception as e:
     logging.warning(e)
     exit()
 
-buildTest = True
+buildTest = False
 
 ### Loop Starts Here ###    
 minutePast = 0
