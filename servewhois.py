@@ -353,8 +353,6 @@ if not os.path.exists(os.path.expanduser(config["data"] + "/lastSwitch.json")):
     state.buildLastSwitch()
 if not os.path.exists(os.path.expanduser(config["data"] + "/memberSeen.json")):
     state.buildMemberSeen()
-if not os.path.exists(os.path.expanduser(config["data"] + "/memberList.json")):
-    state.buildMemberList()
 
 # Start the web server
 try:
@@ -369,6 +367,7 @@ except Exception as e:
     exit()
 
 reloadRequired = True
+buildTest = True
 
 ### Loop Starts Here ###    
 minutePast = 0
@@ -381,7 +380,11 @@ while True:
         state.loadPkGroups()
         state.loadLastSwitch()
         state.loadMemberSeen()
-        reloadRequired = False               
+        reloadRequired = False    
+
+    if buildTest:
+        state.buildMemberList()
+        buildTest = False           
 
     # If an update is required or forced by arg do the update
     if updateRequired:
