@@ -309,7 +309,7 @@ class pktState:
                         for member in switch["members"]:
                             if member not in self.memberSeen.keys():
                                 logging.info("Unable to find member, rebuilding member data")
-                                self.buildPkMembers()
+                                self.getPkMembers()
                                 continue
 
                     # 4) Update the information about when fronters were last seen      
