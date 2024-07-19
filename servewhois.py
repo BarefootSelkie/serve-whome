@@ -457,6 +457,8 @@ while True:
                             message = message + "\nYou last fronted:\n" + str(pktools.rsLastSeen(id, state.memberSeen))[:-10] + " ago\n" + str(pktools.hsTimeShort(pktools.hsLastSeen(id, state.memberSeen))) 
 
                             message = message + "\nYou last fronted:\n" + str(state.memberSeen[id]["lastOut"]) 
+
+                            message = message + "\nCurrent headspace time:\n" + str(pktools.hsTimeShort(pktools.hsTimeNow))
                             
                             if index != 0:
                                 message = message + "\n---\n"
