@@ -458,9 +458,11 @@ while True:
 
                             message = message + "\nYou last fronted:\n" + str(state.memberSeen[id]["lastOut"]) 
                             
-                            if index != 0:
+                            if index == 0:
                                 message = message + "\n---\n"
                                 message = message + "\nCurrent headspace time:\n" + str(pktools.hsTimeShort(pktools.hsTimeNow(zeropoint)))
+                            
+                            if index != 0:
                                 message = message + "\n---\n"
                         
                         sendMessage(message, "full")
