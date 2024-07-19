@@ -460,7 +460,7 @@ while True:
                             
                             if index == 0:
                                 message = message + "\n---\n"
-                                message = message + "\nCurrent headspace time:\n" + str(pktools.hsTimeShort(pktools.hsTimeNow(zeropoint)))
+                                message = message + "Current headspace time:\n" + str(pktools.hsTimeShort(pktools.hsTimeNow(zeropoint)))
                             
                             if index != 0:
                                 message = message + "\n---\n"
