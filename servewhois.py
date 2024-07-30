@@ -247,6 +247,12 @@ class pktState:
         # 3) Create the list of members to output
         memberList = []
         for member in self.pkMembers:
+
+            # check if this is a member that should not appear in the list
+            if member["id"] in list(config["covers"].values()):
+                # skip this member as they are just a 'cover' member
+                continue
+
             card = cardlookup[member["uuid"]] if member["uuid"] in cardlookup else None 
             element = elementlookup[member["uuid"]] if member["uuid"] in elementlookup else None 
             memberList.append({
