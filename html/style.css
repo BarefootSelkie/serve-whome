@@ -1,0 +1,11 @@
+#members 
+{
+    list-style-type: none;
+    padding: 0;
+}
+
+#members li
+{
+    display: flex;
+    flex-direction: row;
+}
