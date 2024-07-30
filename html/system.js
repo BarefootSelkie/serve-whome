@@ -6,8 +6,19 @@ function draw(members)
 
     members.forEach(member => {
         var memberEl = document.createElement("li")
-        var name = document.createTextNode(member["memberName"])
-        memberEl.appendChild(name)
+
+        var nameDiv = document.createElement("div")
+        nameDiv.appendChild(document.createTextNode(member["memberName"]))
+        memberEl.appendChild(nameDiv)
+
+        var cardDiv = document.createElement("div")
+        cardDiv.appendChild(document.createTextNode(member["cardsName"]))
+        memberEl.appendChild(cardDiv)
+        
+        var elementDiv = document.createElement("div")
+        elementDiv.appendChild(document.createTextNode(member["elementName"]))
+        memberEl.appendChild(elementDiv)
+        
         listEl.appendChild(memberEl)
     });
 }
