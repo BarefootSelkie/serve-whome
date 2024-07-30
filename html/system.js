@@ -11,7 +11,10 @@ function draw(members)
 
         var nameDiv = document.createElement("div")
         nameDiv.classList.add("name")
-        nameDiv.appendChild(document.createTextNode(member["memberName"]))
+        var linkEl = document.createElement("a")
+        linkEl.setAttribute("href", "https://dash.pluralkit.me/dash/m/" + member["memberId"])
+        linkEl.appendChild(document.createTextNode(member["memberName"]))
+        nameDiv.appendChild(linkEl)
         memberEl.appendChild(nameDiv)
 
         var cardDiv = document.createElement("div")
