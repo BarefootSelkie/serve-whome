@@ -2,6 +2,8 @@
 function draw(members)
 {
 
+    members.sort((a,b) => a["memberName"] < b["memberName"])
+
     var listEl = document.getElementById("members")
 
     members.forEach(member => {
