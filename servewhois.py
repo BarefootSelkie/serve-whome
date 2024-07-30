@@ -328,6 +328,7 @@ if args.rebuild:
 if not os.path.exists(os.path.expanduser(config["data"])):
     logging.info("No data store, creating directory")
     os.mkdir(os.path.expanduser(config["data"]))
+    os.popen('cp ./html/system.html ' + os.path.expanduser(config["data"])) 
 
 # Create an object to represent the state of the system
 state = pktState()
