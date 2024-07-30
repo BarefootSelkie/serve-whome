@@ -14,7 +14,15 @@ body
 {
     display: flex;
     flex-direction: row;
+    min-height: 2rem;
 }
+
+#members li:nth-child(odd) {
+    background: #f8f8ff;
+  }
+#members li:nth-child(even) {
+    background: #e0e0ff;
+  }
 
 .name
 {
