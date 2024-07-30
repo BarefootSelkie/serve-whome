@@ -5,10 +5,6 @@ import yaml
 import json
 import os
 import requests
-import http.server
-import socketserver
-import socket
-import threading
 import time
 import argparse
 import datetime
@@ -30,21 +26,6 @@ pktoken = config["pluralkit"]["token"]
 zeropoint = config["pluralkit"]["zeropoint"]
 rebuildRequired = False
 updateRequired = False
-
-# Web server setup
-
-PORT = 8080
-
-class Handler(http.server.SimpleHTTPRequestHandler):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=os.path.expanduser(config["data"]), **kwargs)
-    def log_message(self, format, *args):
-        return
-    
-def startWebServer():
-    address = socket.gethostbyname(socket.gethostname() + ".local")
-    with socketserver.TCPServer((address, PORT), Handler) as httpd:
-        httpd.serve_forever()
 
 # argparse setup
 parser = argparse.ArgumentParser()
@@ -380,17 +361,6 @@ if not os.path.exists(os.path.expanduser(config["data"] + "/memberSeen.json")) o
     state.saveMemberSeen()
 else:
     state.loadMemberSeen()
-# Start the web server
-try:
-    threading.Thread(target=startWebServer, daemon=True).start()
-    hostname = socket.gethostname() + ".local"
-    ipAdr = socket.gethostbyname(hostname)
-    message = "pktserve up\n" + "http://" + str(ipAdr) + ":" + str(PORT)
-    sendMessage(message, "full")
-except Exception as e:
-    logging.warning("Web server error ( main )")
-    logging.warning(e)
-    exit()
 
 buildTest = False
 
