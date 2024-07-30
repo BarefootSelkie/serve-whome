@@ -369,17 +369,13 @@ if not os.path.exists(os.path.expanduser(config["data"] + "/memberSeen.json")) o
 else:
     state.loadMemberSeen()
 
-buildTest = False
+if not os.path.exists(os.path.expanduser(config["data"] + "/memberList.json")) or rebuildRequired:
+    state.buildMemberList()
 
 ### Loop Starts Here ###    
 minutePast = 0
 
-while True:  
-
-    # Testing code, will be removed -sp
-    if buildTest:
-        state.buildMemberList()
-        buildTest = False           
+while True:       
 
     # If an update is required or forced by arg do the update
     if updateRequired:
@@ -396,6 +392,8 @@ while True:
         time.sleep(1)
         state.getLastSwitch()
         state.saveLastSwitch()
+        time.sleep(1)
+        state.buildMemberList()
         time.sleep(1)
         updateRequired = False
 
