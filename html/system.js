@@ -6,7 +6,7 @@ function draw(members)
 
     members.forEach(member => {
         var memberEl = document.createElement("li")
-        var name = document.createTextNode(member["name"])
+        var name = document.createTextNode(member["memberName"])
         memberEl.appendChild(name)
         listEl.appendChild(memberEl)
     });
