@@ -13,12 +13,12 @@ function draw(members)
         memberEl.appendChild(nameDiv)
 
         var cardDiv = document.createElement("div")
-        nameDiv.classList.add("card")
+        cardDiv.classList.add("card")
         cardDiv.appendChild(document.createTextNode(member["cardsName"]))
         memberEl.appendChild(cardDiv)
         
         var elementDiv = document.createElement("div")
-        nameDiv.classList.add("element")
+        elementDiv.classList.add("element")
         elementDiv.appendChild(document.createTextNode(member["elementName"]))
         memberEl.appendChild(elementDiv)
         
