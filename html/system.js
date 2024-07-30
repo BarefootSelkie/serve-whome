@@ -2,7 +2,7 @@
 function draw(members)
 {
 
-    members.sort((a,b) => a["memberName"] < b["memberName"])
+    members.sort((a,b) => a["memberName"].toLowerCase() > b["memberName"].toLowerCase())
 
     var listEl = document.getElementById("members")
 
