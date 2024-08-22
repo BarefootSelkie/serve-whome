@@ -429,7 +429,9 @@ while True:
                             if member["pronouns"] is not None:
                                 message = message + " ( " + member["pronouns"] + " )"
                             
-                            message = message + "\nYou last fronted:\n" + str(pktools.rsLastSeen(id, state.memberSeen))[:-10] + " ago\n" + str(pktools.hsTimeShort(pktools.hsLastSeen(id, state.memberSeen))) 
+                            message = message + "\nYou last fronted:\n" + str(pktools.rsLastSeen(id, state.memberSeen))[:-10] + " ago\n"
+                            
+                            message = message + str(pktools.hsTimeHuman(pktools.hsLastSeen(id, state.memberSeen))) 
 
                             message = message + "\nYou last fronted:\n" + str(state.memberSeen[id]["lastOut"]) 
                             
