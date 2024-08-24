@@ -33,7 +33,7 @@ async function run() {
       throw new Error(`Response status: ${response.status}`);
     }
 
-    lastSwitch = await response.json();
+    memberList = await response.json();
   } catch (error) {
     console.error(error.message);
   }
