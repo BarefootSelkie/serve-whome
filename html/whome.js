@@ -40,12 +40,12 @@ async function run() {
 
   var currentFronters = lastSwitch["members"]
 
-  for (var member in memberList) {
+  memberList.foreach((member) => {
     console.log(member)
     if (member["memberId"] == currentFronters[0])
     {
       element.innerHTML = member["memberName"]
     }
-  }
-
+  });
+  
 }
