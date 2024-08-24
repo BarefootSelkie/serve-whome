@@ -43,7 +43,10 @@ async function run() {
   memberList.forEach((member) => {
     if (member["memberId"] == currentFronters[0])
     {
-      element.innerHTML = member["memberName"] + ": " + hsTimeHuman(hsSinceLastIn(currentFronters[0], memberSeen))
+      var rsFrontedSeconds = rsSinceLastIn(currentFronters[0], memberSeen)
+      var humanRsFronted = new Date(rsFrontedSeconds * 1000).toISOString().slice(11, 19);
+      element.innerHTML = member["memberName"] + ": " 
+        + humanRsFronted + " = " + hsTimeHuman(hsSinceLastIn(currentFronters[0], memberSeen))
     }
   });
 
