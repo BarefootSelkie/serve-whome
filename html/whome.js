@@ -1,3 +1,5 @@
+
+
 async function run() {
   var element = document.getElementById("data")
   var zeropoint = "2000-01-01T00:00:00Z"
@@ -44,10 +46,12 @@ async function run() {
     if (member["memberId"] == currentFronters[0])
     {
       var rsFrontedSeconds = rsSinceLastIn(currentFronters[0], memberSeen)
-      var humanRsFronted = new Date(rsFrontedSeconds * 1000).toISOString().slice(11, 19);
+      var humanRsFronted = new Date(rsFrontedSeconds * 1000).toISOString().slice(11, 16);
       element.innerHTML = member["memberName"] + ": " 
         + humanRsFronted + " = " + hsTimeHuman(hsSinceLastIn(currentFronters[0], memberSeen))
     }
   });
+
+  setTimeout(run, 60 * 1000)
 
 }
