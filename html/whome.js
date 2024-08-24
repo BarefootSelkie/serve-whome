@@ -40,5 +40,11 @@ async function run() {
 
   var currentFronters = lastSwitch["members"]
 
-  element.innerHTML = currentFronters
+  for (var member in memberList) {
+    if (member["memberId"] == currentFronters[0])
+    {
+      element.innerHTML = member["memberName"]
+    }
+  }
+
 }
