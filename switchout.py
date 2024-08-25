@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
 
 import requests
-import json
+import yaml
 import logging
 
 # Logging setup
 logging.basicConfig(format="%(asctime)s : %(message)s", filename="log-switchout.log", encoding='utf-8', level=logging.INFO)
 
-# Load settings from files and set settings varibles
+# Load config file
 try:
     with open("./config-serve-whome.yaml", "r") as read_file:
-        apikeys = json.load(read_file)
+        config = yaml.safe_load(read_file)
 except:
-    logging.critical("API Keys missing")
+    logging.critical("Settings file missing")
     exit()
 
-systemid = apikeys["pluralkit"]["systemID"]
-pktoken = apikeys["pluralkit"]["token"]
+systemid = config["pluralkit"]["systemID"]
+pktoken = config["pluralkit"]["token"]
 
 logging.info("Attempting to swtich out")
 try:
