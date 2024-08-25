@@ -11,11 +11,11 @@ import datetime
 from pktools import pktools
 
 # Logging setup
-logging.basicConfig(format="%(asctime)s : %(message)s", filename="log-serve-whois.log", encoding='utf-8', level=logging.WARN)
+logging.basicConfig(format="%(asctime)s : %(message)s", filename="log-serve-whome.log", encoding='utf-8', level=logging.WARN)
 
-# Load settings
+# Load config
 try:
-    with open("./config-serve-whois.yaml", "r") as read_file:
+    with open("./config-serve-whome.yaml", "r") as read_file:
         config = yaml.safe_load(read_file)
 except:
     logging.critical("Settings file missing")

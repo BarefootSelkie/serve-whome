@@ -1,12 +1,12 @@
-# servewhois.py
+# serve-whome.py
 
 **WARNING: This will create a copy of your pluralkit system on your local network, make sure your firewall and security settings are good enough that you are happy doing this**
 
-A server for locally storing and serving data from plural kit, designed for use with my einkwhois projects. 
+A server for locally storing and serving data from plural kit, designed for use with my WhoMe projects. 
 
 ## Data files
 
-Data files are stored locally in **~/.servewhois**
+Data files are stored locally in **~/.whome**
 
 **memberSeen** dictionary from shortCode to lastIn, lastOut, where lastIn is the most recent time a system member fronted when they were not already switched in, and lastOut is the most recent time a system member stopped fronting
 
