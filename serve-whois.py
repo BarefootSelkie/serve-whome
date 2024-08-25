@@ -15,7 +15,7 @@ logging.basicConfig(format="%(asctime)s : %(message)s", filename="log-serve-whoi
 
 # Load settings
 try:
-    with open("./config-servewhois.yaml", "r") as read_file:
+    with open("./config-serve-whois.yaml", "r") as read_file:
         config = yaml.safe_load(read_file)
 except:
     logging.critical("Settings file missing")

@@ -1,5 +1,5 @@
 # Personal settings
-config-servewhois.yaml
+config-serve-whois.yaml
 
 # Logging
 *.log

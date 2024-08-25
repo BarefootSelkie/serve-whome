@@ -1,3 +1,7 @@
+updateInterval: 1
+
+data: "~/.whome"
+
 pluralkit: 
   token: 
   systemID: 
@@ -16,4 +20,7 @@ discord:
     token: 
     serverID: 
 
-data: "~/.pktools"
+
+
+covers:
+# group id: member id
