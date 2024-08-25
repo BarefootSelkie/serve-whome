@@ -11,7 +11,7 @@ import datetime
 from pktools import pktools
 
 # Logging setup
-logging.basicConfig(format="%(asctime)s : %(message)s", filename="servewhois.log", encoding='utf-8', level=logging.WARN)
+logging.basicConfig(format="%(asctime)s : %(message)s", filename="log-serve-whois.log", encoding='utf-8', level=logging.WARN)
 
 # Load settings
 try:

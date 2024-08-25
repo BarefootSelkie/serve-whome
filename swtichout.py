@@ -5,7 +5,7 @@ import json
 import logging
 
 # Logging setup
-logging.basicConfig(format="%(asctime)s : %(message)s", filename="log.log", encoding='utf-8', level=logging.INFO)
+logging.basicConfig(format="%(asctime)s : %(message)s", filename="log-switchout.log", encoding='utf-8', level=logging.INFO)
 
 # Load settings from files and set settings varibles
 try:
