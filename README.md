@@ -4,6 +4,51 @@
 
 A server for locally storing and serving data from plural kit, designed for use with my WhoMe projects. 
 
+## Setup
+
+This assumes that this code is being run by a user called **serve**
+
+Clone into home directory
+`git clone `
+
+Get the pktools submodule
+`cd pktools`
+`git submodule init`
+`git submodule update`
+
+Make data directory ( just in case, should make own )
+`mkdir ~/.whome`
+
+Make data directory accessible to web server
+`chmod 0755 ~`
+
+Install nginx
+`apt install nginx`
+
+Edit nginx
+`sudo nano /etc/nginx/sites-available/default`
+
+Change the server location root to
+`root /home/serve/.whome;`
+
+Restart nginx to apply config change
+`sudo systemctl restart nginx`
+
+Install python venv support
+`sudo apt install python3-venv`
+
+Create the python venv
+`python3 -m venv .venv`
+
+Switch to the venv
+`source .venv/bin/activate`
+
+Install required packages
+`pip install -r requirements.txt`
+
+Run serve-whome.py as process
+`./serve-whome.py &`
+
 ## Data files
 
 Data files are stored locally in **~/.whome**
@@ -44,6 +89,4 @@ This is a very simple script that simply switches all fronters out when run, it 
 
 ### Cron job for switchout.py
 
-``0 0 * * * cd /home/[user] && python3 ./switchout.py``
-
-Will need to replace [user] with the username of the user that runs the server
+``0 0 * * * cd /home/serve/serve-whome && python3 ./switchout.py``
