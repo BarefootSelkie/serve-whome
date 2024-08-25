@@ -9,7 +9,7 @@ logging.basicConfig(format="%(asctime)s : %(message)s", filename="log-switchout.
 
 # Load settings from files and set settings varibles
 try:
-    with open("data/apikeys.json", "r") as read_file:
+    with open("./config-serve-whome.yaml", "r") as read_file:
         apikeys = json.load(read_file)
 except:
     logging.critical("API Keys missing")
