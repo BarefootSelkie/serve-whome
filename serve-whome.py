@@ -205,7 +205,7 @@ class pktState:
 
     # Check to see if the member is set to visible
     def checkVisible(self, member):
-        if member ["privacy"]["visibility"] == "public":
+        if member["privacy"]["visibility"] == "public":
             return True
         else:
             return False
@@ -307,7 +307,7 @@ class pktState:
                 "elementName": element["name"] if element is not None else "",
                 "elementId": element["id"] if element is not None else "",
                 "lastIn": self.memberSeen[memberId]["lastIn"],
-                "visible": self.checkVisible(member["id"])
+                "visible": self.checkVisible(member)
             })
 
     def buildMemberList(self):
