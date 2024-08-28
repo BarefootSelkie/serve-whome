@@ -413,30 +413,27 @@ def messageShort():
     return message
 
 def messageLong():
-    index = len(state.lastSwitch["members"])
+    index = len(state.currentFronters["members"])
     message = "Hi, "
 
-    for id in state.lastSwitch["members"]:
+    for member in state.currentFronters["members"]:
 
-        logging.info("sending discord message for user " + id)
         index = index - 1
-        member, privacy = pktools.getMember(id, state.pkMembers)
-        message = message + member["name"]
+        message = message + member["memberName"]
 
-        if member["pronouns"] is not None:
-            message = message + " ( " + member["pronouns"] + " )"
+        if member["memberPronouns"] is not None:
+            message = message + " ( " + member["memberPronouns"] + " )"
         
-        message = message + "\nYou last fronted:\n" + str(pktools.rsLastSeen(id, state.memberSeen))[:-10] + " ago\n"
+        message = message + "\nYou last fronted:\n" + str(pktools.rsLastSeen(member["memberId"], state.memberSeen))[:-10] + " ago\n"
         
-        message = message + str(pktools.hsTimeHuman(pktools.hsLastSeen(id, state.memberSeen))) 
+        message = message + str(pktools.hsTimeHuman(pktools.hsLastSeen(member["memberId"], state.memberSeen))) 
 
-        message = message + "\nYou last fronted:\n" + str(state.memberSeen[id]["lastOut"]) 
-        
+        message = message + "\nYou last fronted:\n" + str(member["lastOut"]) 
+               
         if index == 0:
             message = message + "\n---\n"
             message = message + "Current headspace time:\n" + str(pktools.hsTimeEasy(pktools.hsTimeNow(zeropoint)))
-        
-        if index != 0:
+        else:
             message = message + "\n---\n"
     
     return message
