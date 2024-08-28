@@ -234,7 +234,9 @@ class pktState:
         elementlookup = self.getGroupMemberships("elements")
 
         # 2) Get details for each fronter
+        logging.info('Getting list of members')
         for memberId in self.lastSwitch["members"]:
+            logging.info('getting info for user ' + memberId)
             member = [i for i in self.pkMembers if i["id"] == memberId][0]
             card = cardlookup[member["uuid"]] if member["uuid"] in cardlookup else None 
             element = elementlookup[member["uuid"]] if member["uuid"] in elementlookup else None 
@@ -262,6 +264,7 @@ class pktState:
             group = self.getGroupById(groupId)
             for memberId in group["members"]:
                 output[memberId] = group
+        return output
 
     def buildMemberList(self):
 
