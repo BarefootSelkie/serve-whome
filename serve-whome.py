@@ -416,7 +416,7 @@ def messageLong():
     index = len(state.lastSwitch["members"])
     message = "Hi, "
 
-    for id in state.currentFronters["members"]:
+    for id in state.lastSwitch["members"]:
 
         logging.info("sending discord message for user " + id)
         index = index - 1
