@@ -172,7 +172,7 @@ class pktState:
 
             for pkid in previousSwitch["members"]:
                 pkid = pkid.strip()
-                if id not in thisSwitch["members"]:
+                if pkid not in thisSwitch["members"]:
                     # A system member has left as of this switch
                     if self.memberSeen[pkid]["lastOut"] < thisSwitch["timestamp"]:
                         self.memberSeen[pkid]["lastOut"] = thisSwitch["timestamp"]
