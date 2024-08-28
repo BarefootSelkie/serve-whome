@@ -307,6 +307,7 @@ class pktState:
                 "elementName": element["name"] if element is not None else "",
                 "elementId": element["id"] if element is not None else "",
                 "lastIn": self.memberSeen[memberId]["lastIn"],
+                "lastOut": self.memberSeen[memberId]["lastOut"],
                 "visible": self.checkVisible(member)
             })
 
