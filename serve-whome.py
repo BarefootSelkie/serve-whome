@@ -120,9 +120,26 @@ class pktState:
             exit()
 
     def saveMemberSeen(self):
-        # Update the memberSeen file on the disk
         with open(self.dataLocation + "/memberSeen.json", "w") as output_file:
             output_file.write(json.dumps(self.memberSeen))
+
+    def loadMemberList(self):
+        try:
+            with open(self.dataLocation + "/memberList.json", "r") as lsFile:
+                self.memberList = json.load(lsFile)
+        except Exception as e:
+            logging.critical("pktState - loadMemberList")
+            logging.critical(e)
+            exit()
+
+    def saveMemberList(self):
+        with open(self.dataLocation + "/memberList.json", "w") as output_file:
+            output_file.write(json.dumps(self.memberList))
+
+    # currentFronters is live data, so is never loaded from disc, but will be saved to be accessible via web requests
+    def saveCurrentFronters(self):
+        with open(self.dataLocation + "/currentFronters.json", "w") as output_file:
+            output_file.write(json.dumps(self.currentFronters))
 
 
 ### api calls ###
@@ -169,6 +186,24 @@ class pktState:
             logging.warning(e)
 
 
+### Utility funcations ###
+
+    def getGroupById(self, id):
+        for group in state.pkGroups:
+            if group["id"].strip() == id:
+                return group
+        return None
+
+    # Return a dictionary of which group members are in
+    def getGroupMemberships(self, groupType):
+        output = {}
+        for groupId in config["groups"][groupType]:
+            group = self.getGroupById(groupId)
+            for memberId in group["members"]:
+                output[memberId] = group
+        return output
+
+
 ### Member Last Seen Logic ###
 
     # Given a batch of switches, updates the MemberSeen data
@@ -191,29 +226,29 @@ class pktState:
                 previousSwitch = thisSwitch
                 continue
 
+            # Check to see which members have switched out in this switch    
             for pkid in previousSwitch["members"]:
-                pkid = pkid.strip()
+                pkid = pkid.strip() # removes trailing spaces that pk sometimes adds
                 if pkid not in thisSwitch["members"]:
                     # A system member has left as of this switch
                     if self.memberSeen[pkid]["lastOut"] < thisSwitch["timestamp"]:
                         self.memberSeen[pkid]["lastOut"] = thisSwitch["timestamp"]
 
+            # Check to see which members have switched in in this switch
             for pkid in thisSwitch["members"]:
-                pkid = pkid.strip()
+                pkid = pkid.strip() # removes trailing spaces that pk sometimes adds
                 if pkid not in previousSwitch["members"]:
                     # A system member has joined as of this switch
                     if self.memberSeen[pkid]["lastIn"] < thisSwitch["timestamp"]:
                         self.memberSeen[pkid]["lastIn"] = thisSwitch["timestamp"]
             
+            # Overwrite the out dated swtich with the new data
             previousSwitch = thisSwitch
 
         # Return timestamp for the switch that we are up-to-date after
         return switches[1]["timestamp"]
 
-    # Pulls entire switch history from pluralkit and builds memberSeen from this
-    # useful for initial setup of data, in normal use would call PullPeriodic() instead
-    # This function writes the updated memberSeen to disk
-    # returns: eventually, can take several minutes to run
+    # Pulls entire switch history from pluralkit and builds memberSeen from this, this is only used if the memberSeen.json is missing, if it is there it'll just use updateMemberSeen(), this will take several minutes to run thought due to amount of data and having to rate limit to not flood pk
     def buildMemberSeen(self):
         # Warn the user that this takes a long time
         print("Rebuilding switches, this can take several minutes")
@@ -239,6 +274,9 @@ class pktState:
                 logging.warning("Unable to fetch front history block " + pointer)
                 logging.warning(e) 
 
+
+### 
+
     def updateCurrentFronters(self):
         self.currentFronters = { 
             "switchUuid": self.lastSwitch["id"],
@@ -250,9 +288,7 @@ class pktState:
         elementlookup = self.getGroupMemberships("elements")
 
         # 2) Get details for each fronter
-        logging.info('Getting list of members')
         for memberId in self.lastSwitch["members"]:
-            logging.info('getting info for user ' + memberId)
             member = [i for i in self.pkMembers if i["id"] == memberId][0]
             card = cardlookup[member["uuid"]] if member["uuid"] in cardlookup else None 
             element = elementlookup[member["uuid"]] if member["uuid"] in elementlookup else None 
@@ -267,31 +303,15 @@ class pktState:
                 "lastIn": self.memberSeen[memberId]["lastIn"]
             })
 
-    def getGroupById(self, id):
-        for group in state.pkGroups:
-            if group["id"].strip() == id:
-                return group
-        return None
-
-    # Return a dictionary of which group members are in
-    def getGroupMemberships(self, groupType):
-        output = {}
-        for groupId in config["groups"][groupType]:
-            group = self.getGroupById(groupId)
-            for memberId in group["members"]:
-                output[memberId] = group
-        return output
-
     def buildMemberList(self):
 
-        # 1) Make a dictionary (memberId -> card)
-        cardlookup = self.getGroupMemberships("cards")
+        self.memberList = []
 
-        # 2) Make a dictionary (member -> element)
+        # Make lookups for groups
+        cardlookup = self.getGroupMemberships("cards")
         elementlookup = self.getGroupMemberships("elements")
 
-        # 3) Create the list of members to output
-        memberList = []
+        # Create the list of members to output
         for member in self.pkMembers:
 
             # check if this is a member that should not appear in the list
@@ -301,7 +321,7 @@ class pktState:
 
             card = cardlookup[member["uuid"]] if member["uuid"] in cardlookup else None 
             element = elementlookup[member["uuid"]] if member["uuid"] in elementlookup else None 
-            memberList.append({
+            self.memberList.append({
                 "memberName": member["name"],
                 "memberId": member["id"],
                 "memberPronouns": member["pronouns"],
@@ -311,9 +331,6 @@ class pktState:
                 "elementId": element["id"] if element is not None else ""
             })
 
-        # 4) Write the members list to a file
-        with open(self.dataLocation + "/memberList.json", "w") as output_file:
-            output_file.write(json.dumps(memberList))
 
 ### Periodic data update functions ###
 
@@ -328,14 +345,15 @@ class pktState:
             r = requests.get("https://api.pluralkit.me/v2/systems/" + systemid + "/switches?limit=100", headers={'Authorization':pktoken})
             switches = r.json()
 
+            # Check to see if a list has been returned from the request
             if (len(switches) > 1):
+
                 # 1) Check to see if a switch has occured
                 if ("id" not in self.lastSwitch) or (switches[0]["id"] != self.lastSwitch["id"]):
                     # 2) If it has, update the last switch file
                     switchOccurred = True
                     self.lastSwitch = switches[0]
-                    with open(self.dataLocation + "/lastSwitch.json", "w") as output_file:
-                        output_file.write(json.dumps(self.lastSwitch))
+                    self.saveLastSwitch()
 
                     # 3) Check whether there are any new members we don't know about yet
                     for switch in switches:
@@ -343,24 +361,20 @@ class pktState:
                             if member not in self.memberSeen.keys():
                                 logging.info("Unable to find member, rebuilding member data")
                                 self.makeApiCallPkMembers()
+                                self.savePkMembers()
                                 continue
 
-                    # 4) Update the information about when fronters were last seen      
+                    # 4) Update the information about when fronters were last seen, it's here as it needs the swtiches from the api request
                     self.updateMemberSeen(switches)
-                    with open(self.dataLocation + "/memberSeen.json", "w") as output_file:
-                        output_file.write(json.dumps(self.memberSeen))
-
-                    # 5) Update the current fronters file
-                    self.updateCurrentFronters()
-                    with open(self.dataLocation + "/currentFronters.json", "w") as output_file:
-                        output_file.write(json.dumps(self.currentFronters))
-
+                    self.saveMemberSeen()
+                    
         except Exception as e:
             # Fail silently
             logging.warning("Unable to fetch recent switches ( pullPeriodic )")
             logging.warning(e) 
 
         return switchOccurred
+
 
 ### Discord message sending ###
 # Used for notifiying of switches and also for server startup
@@ -468,6 +482,9 @@ else:
 
 if not os.path.exists(os.path.expanduser(config["data"] + "/memberList.json")) or rebuildRequired:
     state.buildMemberList()
+    state.saveMemberList()
+else:
+    state.loadMemberList()
 
 ### Loop Starts Here ###    
 minutePast = 0
@@ -491,6 +508,7 @@ while True:
         state.saveLastSwitch()
         time.sleep(1)
         state.buildMemberList()
+        state.saveMemberList()
         time.sleep(1)
         updateRequired = False
 
@@ -508,6 +526,10 @@ while True:
             # If pullPeriodic returns true we need to send Discord messages
             if state.pullPeriodic():
                 
+                # Update the current fronters file
+                state.updateCurrentFronters()
+                state.saveCurrentFronters()
+
                 # Check if not switched out
                 if len(state.lastSwitch["members"]) > 0:
 
