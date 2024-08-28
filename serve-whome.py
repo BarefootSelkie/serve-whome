@@ -55,6 +55,9 @@ class pktState:
         self.memberSeen = {}
         self.dataLocation = os.path.expanduser(config["data"])
 
+
+### local file loading and saving ###
+
     def loadPkSystem(self):
         try:
             with open(self.dataLocation + "/pkSystem.json", "r") as lsFile:
@@ -64,6 +67,10 @@ class pktState:
             logging.critical(e)
             exit()
     
+    def savePkSystem(self):
+        with open(os.path.expanduser(config["data"]) + "/pkSystem.json", "w") as systemFile:
+            systemFile.write(json.dumps(self.pkSystem))
+
     def loadPkMembers(self):
         try:
             with open(self.dataLocation + "/pkMembers.json", "r") as lsFile:
@@ -72,7 +79,11 @@ class pktState:
             logging.critical("pktState - loadPkMembers")
             logging.critical(e)
             exit()
-    
+
+    def savePkMembers(self):
+         with open(os.path.expanduser(config["data"]) + "/pkMembers.json", "w") as memberFile:
+            memberFile.write(json.dumps(self.pkMembers))
+
     def loadPkGroups(self):
         try:
             with open(self.dataLocation + "/pkGroups.json", "r") as lsFile:
@@ -81,6 +92,10 @@ class pktState:
             logging.critical("pktState - loadPkGroup")
             logging.critical(e)
             exit()
+
+    def savePkGroups(self):
+        with open(os.path.expanduser(config["data"]) + "/pkGroups.json", "w") as groupsFile:
+            groupsFile.write(json.dumps(self.pkGroups))
     
     def loadLastSwitch(self):
         try:
@@ -90,6 +105,10 @@ class pktState:
             logging.critical("pktState - loadLastSwitch")
             logging.critical(e)
             exit()
+
+    def saveLastSwitch(self):
+        with open(os.path.expanduser(config["data"]) + "/lastSwitch.json", "w") as outputFile:
+            outputFile.write(json.dumps(self.lastSwitch))
     
     def loadMemberSeen(self):
         try:
@@ -100,64 +119,55 @@ class pktState:
             logging.critical(e)
             exit()
 
-### Data store building functions ###
+    def saveMemberSeen(self):
+        # Update the memberSeen file on the disk
+        with open(self.dataLocation + "/memberSeen.json", "w") as output_file:
+            output_file.write(json.dumps(self.memberSeen))
+
+
+### api calls ###
 
     # Get the raw system data from the PluralKit API and store it to memory
-    def getPkSystem(self):
-        logging.info("( getPkSystem )")
+    def makeApiCallPkSystem(self):
+        logging.info("( makeApiCallPkSystem )")
         try:
             r = requests.get("https://api.pluralkit.me/v2/systems/" + systemid, headers={'Authorization':pktoken})
             self.pkSystem = json.loads(r.text)
         except Exception as e:
-            logging.warning("PluralKit requests.get ( getPkSystem )")
+            logging.warning("PluralKit requests.get ( makeApiCallPkSystem )")
             logging.warning(e) 
 
-    def savePkSystem(self):
-        with open(os.path.expanduser(config["data"]) + "/pkSystem.json", "w") as systemFile:
-            systemFile.write(json.dumps(self.pkSystem))
-
     # Get the raw data about system members from the PluralKit API
-    def getPkMembers(self):
-        logging.info("( getPkMembers )")
+    def makeApiCallPkMembers(self):
+        logging.info("( makeApiCallPkMembers )")
         try:
             r = requests.get("https://api.pluralkit.me/v2/systems/" + systemid + "/members", headers={'Authorization':pktoken})
             self.pkMembers = json.loads(r.text)
         except Exception as e:
-            logging.warning("PluralKit requests.get ( getPkMembers )")
+            logging.warning("PluralKit requests.get ( makeApiCallPkMembers )")
             logging.warning(e) 
     
-    def savePkMembers(self):
-         with open(os.path.expanduser(config["data"]) + "/pkMembers.json", "w") as memberFile:
-            memberFile.write(json.dumps(self.pkMembers))
-
     # Get the raw data about system groups from the PluralKit API
-    def getPkGroups(self):
-        logging.info("( getPkGroups )")
+    def makeApiCallPkGroups(self):
+        logging.info("( makeApiCallPkGroups )")
         try:
             r = requests.get("https://api.pluralkit.me/v2/systems/" + systemid + "/groups?with_members=true", headers={'Authorization':pktoken})
             self.pkGroups = json.loads(r.text)
         except Exception as e:
-            logging.warning("PluralKit requests.get ( getPkGroups )")
+            logging.warning("PluralKit requests.get ( makeApiCallPkGroups )")
             logging.warning(e)
 
-    def savePkGroups(self):
-        with open(os.path.expanduser(config["data"]) + "/pkGroups.json", "w") as groupsFile:
-            groupsFile.write(json.dumps(self.pkGroups))
-
     # Get the raw data about the most recent switch from the PluralKit API
-    def getLastSwitch(self):
-        logging.info("( getLastSwitch )")
+    def makeApiCallLastSwitch(self):
+        logging.info("( makeApiCallLastSwitch )")
         try:
             r = requests.get("https://api.pluralkit.me/v2/systems/" + systemid + "/switches?limit=1", headers={'Authorization':pktoken})
             switches = r.json()
             self.lastSwitch = switches[0]
         except Exception as e:
-            logging.warning("PluralKit requests.get ( getPkSwitch )")
+            logging.warning("PluralKit requests.get ( makeApiCallPkSwitch )")
             logging.warning(e)
 
-    def saveLastSwitch(self):
-        with open(os.path.expanduser(config["data"]) + "/lastSwitch.json", "w") as outputFile:
-            outputFile.write(json.dumps(self.lastSwitch))
 
 ### Member Last Seen Logic ###
 
@@ -228,11 +238,6 @@ class pktState:
                 # Fail silently
                 logging.warning("Unable to fetch front history block " + pointer)
                 logging.warning(e) 
-
-    def saveMemberSeen(self):
-        # Update the memberSeen file on the disk
-        with open(self.dataLocation + "/memberSeen.json", "w") as output_file:
-            output_file.write(json.dumps(self.memberSeen))
 
     def updateCurrentFronters(self):
         self.currentFronters = { 
@@ -337,7 +342,7 @@ class pktState:
                         for member in switch["members"]:
                             if member not in self.memberSeen.keys():
                                 logging.info("Unable to find member, rebuilding member data")
-                                self.getPkMembers()
+                                self.makeApiCallPkMembers()
                                 continue
 
                     # 4) Update the information about when fronters were last seen      
@@ -433,24 +438,24 @@ state = pktState()
 
 # Check that each file exists
 if not os.path.exists(os.path.expanduser(config["data"] + "/pkSystem.json")) or rebuildRequired:
-    state.getPkSystem()
+    state.makeApiCallPkSystem()
     state.savePkSystem()
 else:
     state.loadPkSystem()
 
 if not os.path.exists(os.path.expanduser(config["data"] + "/pkMembers.json")) or rebuildRequired:
-    state.getPkMembers()
+    state.makeApiCallPkMembers()
     state.savePkMembers()
 else:
     state.loadPkMembers()
 
 if not os.path.exists(os.path.expanduser(config["data"] + "/pkGroups.json")) or rebuildRequired:
-    state.getPkGroups()
+    state.makeApiCallPkGroups()
     state.savePkGroups()
 else:
     state.loadPkGroups()    
 if not os.path.exists(os.path.expanduser(config["data"] + "/lastSwitch.json")) or rebuildRequired:
-    state.getLastSwitch()
+    state.makeApiCallLastSwitch()
     state.saveLastSwitch()
 else:
     state.loadLastSwitch()
@@ -473,16 +478,16 @@ while True:
     if updateRequired:
         logging.info("Updating pkSystem, pkMembers, pkGroups, lastSwitch from pluralkit")
         time.sleep(1)
-        state.getPkSystem()
+        state.makeApiCallPkSystem()
         state.savePkSystem()
         time.sleep(1)
-        state.getPkMembers()
+        state.makeApiCallPkMembers()
         state.savePkMembers()
         time.sleep(1)
-        state.getPkGroups()
+        state.makeApiCallPkGroups()
         state.savePkGroups()
         time.sleep(1)
-        state.getLastSwitch()
+        state.makeApiCallLastSwitch()
         state.saveLastSwitch()
         time.sleep(1)
         state.buildMemberList()
@@ -497,6 +502,7 @@ while True:
         if time.localtime()[4] == 0 and time.localtime()[3] == 4:
             updateRequired = True
 
+        # If the current minute devided by the update intervate is ture
         if ( time.localtime()[4] % config["updateInterval"] ) == 0:
 
             # If pullPeriodic returns true we need to send Discord messages
