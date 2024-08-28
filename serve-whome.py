@@ -203,6 +203,12 @@ class pktState:
                 output[memberId] = group
         return output
 
+    # Check to see if the member is set to visible
+    def checkVisible(self, member):
+        if member ["privacy"]["visibility"] == "public":
+            return True
+        else:
+            return False
 
 ### Member Last Seen Logic ###
 
@@ -275,12 +281,12 @@ class pktState:
                 logging.warning(e) 
 
 
-### 
+### data sets for other WhoMe projects ###
 
     def updateCurrentFronters(self):
         self.currentFronters = { 
             "switchUuid": self.lastSwitch["id"],
-            "fronters": [] 
+            "members": [] 
         }
 
         # 1) Find out what the card and element is for each system member
@@ -292,7 +298,7 @@ class pktState:
             member = [i for i in self.pkMembers if i["id"] == memberId][0]
             card = cardlookup[member["uuid"]] if member["uuid"] in cardlookup else None 
             element = elementlookup[member["uuid"]] if member["uuid"] in elementlookup else None 
-            self.currentFronters["fronters"].append({
+            self.currentFronters["members"].append({
                 "memberName": member["name"],
                 "memberId": member["id"],
                 "memberPronouns": member["pronouns"],
@@ -300,7 +306,8 @@ class pktState:
                 "cardsId": card["id"] if card is not None else "",
                 "elementName": element["name"] if element is not None else "",
                 "elementId": element["id"] if element is not None else "",
-                "lastIn": self.memberSeen[memberId]["lastIn"]
+                "lastIn": self.memberSeen[memberId]["lastIn"],
+                "visible": self.checkVisible(member["id"])
             })
 
     def buildMemberList(self):
@@ -328,7 +335,8 @@ class pktState:
                 "cardsName": card["name"] if card is not None else "",
                 "cardsId": card["id"] if card is not None else "",
                 "elementName": element["name"] if element is not None else "",
-                "elementId": element["id"] if element is not None else ""
+                "elementId": element["id"] if element is not None else "",
+                "visible": self.checkVisible(member["id"])
             })
 
 
@@ -379,32 +387,36 @@ class pktState:
 ### Discord message sending ###
 # Used for notifiying of switches and also for server startup
 def messageShort():
-    index = len(state.lastSwitch["members"])
+    index = len(state.currentFronters["members"])
     message = "Hi, "
     
-    for id in state.lastSwitch["members"]:
+    for member in state.currentFronters["members"]:
         index = index - 1
-        member, privacy = pktools.getMember(id, state.pkMembers)
-        if privacy:
-            member, privacy = pktools.getMember(config["pluralkit"]["defaultFronter"], state.pkMembers)
+        
+        if member["visible"]:
+            message = message + member["memberName"]
+            if member["memberPronouns"] is not None:
+                message = message + " ( " + member["memberPronouns"] + " )"
+        else:
+            message = message + state.pkSystem["name"]
+            if state.pkSystem["pronouns"] is not None:
+                message = message + " ( " + state.pkSystem["pronouns"] + " )"
 
-        flagGroup = [i for i in state.pkGroups if i["id"].strip() == config["pluralkit"]["flagGroup"]][0]
+        if member["cardsName"] is not None:
+            message = message + " " + member["cardsName"]
 
-        message = message + member["name"]
-        if member["pronouns"] is not None:
-            message = message + " ( " + member["pronouns"] + " )"
-        if member["uuid"] in flagGroup["members"]:
-            message = message + " 🔞"
-        if index != 0:
-            message = message + ", "
-
+        match index:
+            case 0: message = message
+            case 1: message = message + ", and "
+            case _: message = message + ", "
+            
     return message
 
 def messageLong():
     index = len(state.lastSwitch["members"])
     message = "Hi, "
 
-    for id in state.lastSwitch["members"]:
+    for id in state.currentFronters["members"]:
 
         logging.info("sending discord message for user " + id)
         index = index - 1
