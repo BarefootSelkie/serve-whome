@@ -225,7 +225,7 @@ class pktState:
 
     def updateCurrentFronters(self):
         self.currentFronters = { 
-            "switchUuid": self.lastSwitch["uuid"],
+            "switchUuid": self.lastSwitch["id"],
             "fronters": [] 
         }
 
