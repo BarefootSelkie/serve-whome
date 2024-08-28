@@ -10,8 +10,24 @@ import argparse
 import datetime
 from pktools import pktools
 
+
+# argparse setup
+parser = argparse.ArgumentParser()
+
+# avaible arguments
+parser.add_argument("-r", "--rebuild", action="store_true", help="Rebuild all data")
+parser.add_argument("-v", "--verbose", action="store_true", help="Enable info level logging")
+
+# Check for passed in args and set flags as required
+args = parser.parse_args()
+if args.rebuild:
+    rebuildRequired = True
+
 # Logging setup
-logging.basicConfig(format="%(asctime)s : %(message)s", filename="log-serve-whome.log", encoding='utf-8', level=logging.WARN)
+if args.verbose:
+    logging.basicConfig(format="%(asctime)s : %(message)s", filename="log-serve-whome.log", encoding='utf-8', level=logging.INFO)
+else:
+    logging.basicConfig(format="%(asctime)s : %(message)s", filename="log-serve-whome.log", encoding='utf-8', level=logging.WARN)
 
 # Load config
 try:
@@ -26,11 +42,6 @@ pktoken = config["pluralkit"]["token"]
 zeropoint = config["pluralkit"]["zeropoint"]
 rebuildRequired = False
 updateRequired = False
-
-# argparse setup
-parser = argparse.ArgumentParser()
-
-parser.add_argument("-r", "--rebuild", action="store_true", help="Rebuild all data")
 
 ### Data store loading functions ###
 # Loads in data stores and make globals from them
@@ -348,8 +359,58 @@ class pktState:
 
 ### Discord message sending ###
 # Used for notifiying of switches and also for server startup
+def messageShort():
+    index = len(state.lastSwitch["members"])
+    message = "Hi, "
+    
+    for id in state.lastSwitch["members"]:
+        index = index - 1
+        member, privacy = pktools.getMember(id, state.pkMembers)
+        if privacy:
+            member, privacy = pktools.getMember(config["pluralkit"]["defaultFronter"], state.pkMembers)
 
-def sendMessage(messageText, mode):
+        flagGroup = [i for i in state.pkGroups if i["id"].strip() == config["pluralkit"]["flagGroup"]][0]
+
+        message = message + member["name"]
+        if member["pronouns"] is not None:
+            message = message + " ( " + member["pronouns"] + " )"
+        if member["uuid"] in flagGroup["members"]:
+            message = message + " 🔞"
+        if index != 0:
+            message = message + ", "
+
+    return message
+
+def messageLong():
+    index = len(state.lastSwitch["members"])
+    message = "Hi, "
+
+    for id in state.lastSwitch["members"]:
+
+        logging.info("sending discord message for user " + id)
+        index = index - 1
+        member, privacy = pktools.getMember(id, state.pkMembers)
+        message = message + member["name"]
+
+        if member["pronouns"] is not None:
+            message = message + " ( " + member["pronouns"] + " )"
+        
+        message = message + "\nYou last fronted:\n" + str(pktools.rsLastSeen(id, state.memberSeen))[:-10] + " ago\n"
+        
+        message = message + str(pktools.hsTimeHuman(pktools.hsLastSeen(id, state.memberSeen))) 
+
+        message = message + "\nYou last fronted:\n" + str(state.memberSeen[id]["lastOut"]) 
+        
+        if index == 0:
+            message = message + "\n---\n"
+            message = message + "Current headspace time:\n" + str(pktools.hsTimeEasy(pktools.hsTimeNow(zeropoint)))
+        
+        if index != 0:
+            message = message + "\n---\n"
+    
+    return message
+
+def messageSend(messageText, mode):
     logging.info("Sending Discord message")
     message = {"content": messageText}
     try:
@@ -359,11 +420,6 @@ def sendMessage(messageText, mode):
         logging.warning(e) 
 
 ### Main Code ###
-
-# Check for passed in args and set flags as required
-args = parser.parse_args()
-if args.rebuild:
-    rebuildRequired = True
 
 # If there is no directory to store the data create it
 if not os.path.exists(os.path.expanduser(config["data"])):
@@ -451,58 +507,13 @@ while True:
 
                     # Build and send full message
                     if config["discord"]["full"]["enabled"]:
-                                            
-                        index = len(state.lastSwitch["members"])
-                        message = "Hi, "
-                    
-                        for id in state.lastSwitch["members"]:
-
-                            logging.info("sending discord message for user " + id)
-                            index = index - 1
-                            member, privacy = pktools.getMember(id, state.pkMembers)
-                            message = message + member["name"]
-
-                            if member["pronouns"] is not None:
-                                message = message + " ( " + member["pronouns"] + " )"
-                            
-                            message = message + "\nYou last fronted:\n" + str(pktools.rsLastSeen(id, state.memberSeen))[:-10] + " ago\n"
-                            
-                            message = message + str(pktools.hsTimeHuman(pktools.hsLastSeen(id, state.memberSeen))) 
-
-                            message = message + "\nYou last fronted:\n" + str(state.memberSeen[id]["lastOut"]) 
-                            
-                            if index == 0:
-                                message = message + "\n---\n"
-                                message = message + "Current headspace time:\n" + str(pktools.hsTimeEasy(pktools.hsTimeNow(zeropoint)))
-                            
-                            if index != 0:
-                                message = message + "\n---\n"
-                        
-                        sendMessage(message, "full")
+                        message = messageLong()
+                        messageSend(message, "full")
                     
                     # Build and send filtered message
                     if config["discord"]["filtered"]["enabled"]:
-                        
-                        index = len(state.lastSwitch["members"])
-                        message = "Hi, "
-                        
-                        for id in state.lastSwitch["members"]:
-                            index = index - 1
-                            member, privacy = pktools.getMember(id, state.pkMembers)
-                            if privacy:
-                                member, privacy = pktools.getMember(config["pluralkit"]["defaultFronter"], state.pkMembers)
-
-                            flagGroup = [i for i in state.pkGroups if i["id"].strip() == config["pluralkit"]["flagGroup"]][0]
-    
-                            message = message + member["name"]
-                            if member["pronouns"] is not None:
-                                message = message + " ( " + member["pronouns"] + " )"
-                            if member["uuid"] in flagGroup["members"]:
-                                message = message + " 🔞"
-                            if index != 0:
-                                message = message + ", "
-                        
-                        sendMessage(message, "filtered")
+                        message = messageShort()
+                        messageSend(message, "filtered")
                         
     time.sleep(10)
 #    print("running")
