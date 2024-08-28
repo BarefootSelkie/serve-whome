@@ -40,6 +40,7 @@ class pktState:
         self.pkMembers = None
         self.pkGroups = None
         self.lastSwitch = None
+        self.currentFronters = None
         self.memberSeen = {}
         self.dataLocation = os.path.expanduser(config["data"])
 
@@ -222,27 +223,53 @@ class pktState:
         with open(self.dataLocation + "/memberSeen.json", "w") as output_file:
             output_file.write(json.dumps(self.memberSeen))
 
+    def updateCurrentFronters(self):
+        self.currentFronters = { 
+            "switchUuid": self.lastSwitch["uuid"],
+            "fronters": [] 
+        }
+
+        # 1) Find out what the card and element is for each system member
+        cardlookup = self.getGroupMemberships("cards")
+        elementlookup = self.getGroupMemberships("elements")
+
+        # 2) Get details for each fronter
+        for memberId in self.lastSwitch["members"]:
+            member = [i for i in self.pkMembers if i["id"] == memberId][0]
+            card = cardlookup[member["uuid"]] if member["uuid"] in cardlookup else None 
+            element = elementlookup[member["uuid"]] if member["uuid"] in elementlookup else None 
+            self.currentFronters["fronters"].append({
+                "memberName": member["name"],
+                "memberId": member["id"],
+                "memberPronouns": member["pronouns"],
+                "cardsName": card["name"] if card is not None else "",
+                "cardsId": card["id"] if card is not None else "",
+                "elementName": element["name"] if element is not None else "",
+                "elementId": element["id"] if element is not None else "",
+                "lastIn": self.memberSeen[memberId]["lastIn"]
+            })
+
     def getGroupById(self, id):
         for group in state.pkGroups:
             if group["id"].strip() == id:
                 return group
         return None
 
+    # Return a dictionary of which group members are in
+    def getGroupMemberships(self, groupType):
+        output = {}
+        for groupId in config["groups"][groupType]:
+            group = self.getGroupById(groupId)
+            for memberId in group["members"]:
+                output[memberId] = group
+
     def buildMemberList(self):
 
         # 1) Make a dictionary (memberId -> card)
-        cardlookup = {}
-        for groupId in config["groups"]["cards"]:
-            card = self.getGroupById(groupId)
-            for memberId in card["members"]:
-                cardlookup[memberId] = card
+        cardlookup = self.getGroupMemberships("cards")
 
         # 2) Make a dictionary (member -> element)
-        elementlookup = {}
-        for groupId in config["groups"]["elements"]:
-            element = self.getGroupById(groupId)
-            for memberId in element["members"]:
-                elementlookup[memberId] = element
+        elementlookup = self.getGroupMemberships("elements")
 
         # 3) Create the list of members to output
         memberList = []
@@ -303,6 +330,11 @@ class pktState:
                     self.updateMemberSeen(switches)
                     with open(self.dataLocation + "/memberSeen.json", "w") as output_file:
                         output_file.write(json.dumps(self.memberSeen))
+
+                    # 5) Update the current fronters file
+                    self.updateCurrentFronters()
+                    with open(self.dataLocation + "/currentFronters.json", "w") as output_file:
+                        output_file.write(json.dumps(self.currentFronters))
 
         except Exception as e:
             # Fail silently
