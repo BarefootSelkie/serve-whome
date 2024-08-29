@@ -1,0 +1,10 @@
+[Unit]
+Description=Serve WhoMe
+
+[Service]
+WorkingDirectory=/home/serve/serve-whome/
+ExecStart=/home/serve/serve-whome/.venv/bin/python /home/serve/serve-whome/serve-whome.py
+
+[Install]
+WantedBy=multi-user.target
+Alias=servewhome.service

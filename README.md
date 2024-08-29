@@ -46,8 +46,12 @@ Switch to the venv
 Install required packages
 `pip install -r requirements.txt`
 
-Run serve-whome.py as process
-`./serve-whome.py &`
+Copy the service file to the correct location
+`sudo cp servewhome.service /lib/systemd/system/`
+
+Enable and start the service
+`sudo systemctl enable servewhome.service`
+`sudo systemctl start servewhome.service`
 
 ## Data files
 
