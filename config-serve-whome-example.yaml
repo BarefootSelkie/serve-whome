@@ -1,6 +1,6 @@
 updateInterval: 1
 
-data: "~/.whome"
+data: "/home/serve/.whome"
 
 pluralkit: 
   token: 
