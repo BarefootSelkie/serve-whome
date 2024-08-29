@@ -337,7 +337,7 @@ class pktState:
                 "cardsId": card["id"] if card is not None else "",
                 "elementName": element["name"] if element is not None else "",
                 "elementId": element["id"] if element is not None else "",
-                "visible": self.checkVisible(member["id"])
+                "visible": self.checkVisible(member)
             })
 
 
