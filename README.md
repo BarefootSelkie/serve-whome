@@ -53,6 +53,14 @@ Enable and start the service
 `sudo systemctl enable servewhome.service`
 `sudo systemctl start servewhome.service`
 
+## Debugging
+
+Critical errors will appear in the systemctl log which can be accessed using:
+`sudo journalctl -u servewhome.service`
+
+Other errors will appear in the log file:
+`/home/serve/log-servewhome.log`
+
 ## Data files
 
 Data files are stored locally in **~/.whome**
