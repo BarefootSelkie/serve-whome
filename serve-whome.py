@@ -306,11 +306,11 @@ class pktState:
             card = cardlookup[member["uuid"]] if member["uuid"] in cardlookup else None 
             element = elementlookup[member["uuid"]] if member["uuid"] in elementlookup else None 
             self.currentFronters["members"].append({
-                "memberName": member["name"],
-                "memberId": member["id"],
-                "memberPronouns": member["pronouns"],
+                "name": member["name"],
+                "id": member["id"],
+                "pronouns": member["pronouns"],
                 "cardSuit": card["name"] if card is not None else "",
-                "cardsId": card["id"] if card is not None else "",
+                "cardId": card["id"] if card is not None else "",
                 "elementName": element["name"] if element is not None else "",
                 "elementId": element["id"] if element is not None else "",
                 "lastIn": self.memberSeen[memberId]["lastIn"],
@@ -337,11 +337,11 @@ class pktState:
             card = cardlookup[member["uuid"]] if member["uuid"] in cardlookup else None 
             element = elementlookup[member["uuid"]] if member["uuid"] in elementlookup else None 
             self.memberList.append({
-                "memberName": member["name"],
-                "memberId": member["id"],
-                "memberPronouns": member["pronouns"],
-                "cardsName": card["name"] if card is not None else "",
-                "cardsId": card["id"] if card is not None else "",
+                "name": member["name"],
+                "id": member["id"],
+                "pronouns": member["pronouns"],
+                "cardSuit": card["name"] if card is not None else "",
+                "cardId": card["id"] if card is not None else "",
                 "elementName": element["name"] if element is not None else "",
                 "elementId": element["id"] if element is not None else "",
                 "visible": self.checkVisible(member)
@@ -402,9 +402,9 @@ def messageShort():
         index = index - 1
         
         if member["visible"]:
-            message = message + member["memberName"]
-            if member["memberPronouns"] is not None:
-                message = message + " ( " + member["memberPronouns"] + " )"
+            message = message + member["name"]
+            if member["pronouns"] is not None:
+                message = message + " ( " + member["pronouns"] + " )"
         else:
             message = message + state.pkSystem["name"]
             if state.pkSystem["pronouns"] is not None:
@@ -427,14 +427,14 @@ def messageLong():
     for member in state.currentFronters["members"]:
 
         index = index - 1
-        message = message + member["memberName"]
+        message = message + member["name"]
 
         if member["memberPronouns"] is not None:
-            message = message + " ( " + member["memberPronouns"] + " )"
+            message = message + " ( " + member["pronouns"] + " )"
         
-        message = message + "\nYou last fronted:\n" + str(pktools.rsLastSeen(member["memberId"], state.memberSeen))[:-10] + " ago\n"
+        message = message + "\nYou last fronted:\n" + str(pktools.rsLastSeen(member["id"], state.memberSeen))[:-10] + " ago\n"
         
-        message = message + str(pktools.hsTimeHuman(pktools.hsLastSeen(member["memberId"], state.memberSeen))) 
+        message = message + str(pktools.hsTimeHuman(pktools.hsLastSeen(member["id"], state.memberSeen))) 
 
         message = message + "\nYou last fronted:\n" + str(member["lastOut"]) 
                
