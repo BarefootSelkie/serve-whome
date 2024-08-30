@@ -429,7 +429,7 @@ def messageLong():
         index = index - 1
         message = message + member["name"]
 
-        if member["memberPronouns"] is not None:
+        if member["pronouns"] is not None:
             message = message + " ( " + member["pronouns"] + " )"
         
         message = message + "\nYou last fronted:\n" + str(pktools.rsLastSeen(member["id"], state.memberSeen))[:-10] + " ago\n"
