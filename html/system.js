@@ -38,6 +38,6 @@ function draw(members)
     });
 }
 
-fetch("./memberList.json")
+fetch("./memberList.json", {"cache": "no-store"})
   .then((response) => response.json())
   .then((json) => draw(json));
