@@ -285,7 +285,14 @@ class pktState:
 
     def updateCurrentFronters(self):
         self.currentFronters = { 
-            "switchUuid": self.lastSwitch["id"],
+            "switch": {
+                "id": self.lastSwitch["id"],
+                "timestamp": self.lastSwitch["timestamp"]
+            },
+            "system": {
+                "name": self.pkSystem["name"],
+                "pronouns": self.pkSystem["pronouns"]
+            },
             "members": [] 
         }
 
@@ -302,7 +309,7 @@ class pktState:
                 "memberName": member["name"],
                 "memberId": member["id"],
                 "memberPronouns": member["pronouns"],
-                "cardsName": card["name"] if card is not None else "",
+                "cardSuit": card["name"] if card is not None else "",
                 "cardsId": card["id"] if card is not None else "",
                 "elementName": element["name"] if element is not None else "",
                 "elementId": element["id"] if element is not None else "",
@@ -403,8 +410,8 @@ def messageShort():
             if state.pkSystem["pronouns"] is not None:
                 message = message + " ( " + state.pkSystem["pronouns"] + " )"
 
-        if member["cardsName"] is not None:
-            message = message + " " + member["cardsName"]
+        if member["cardSuit"] is not None:
+            message = message + " " + member["cardSuit"]
 
         match index:
             case 0: message = message
