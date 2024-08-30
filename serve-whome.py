@@ -407,10 +407,10 @@ def messageShort():
                 message = message + " ( " + member["pronouns"] + " )"
         else:
             message = message + state.pkSystem["name"]
-            if state.pkSystem["pronouns"] is not None:
+            if "pronouns" in state.pkSystem and state.pkSystem["pronouns"] is not None:
                 message = message + " ( " + state.pkSystem["pronouns"] + " )"
 
-        if member["cardSuit"] is not None:
+        if "cardSuit" in member and member["cardSuit"] is not None:
             message = message + " " + member["cardSuit"]
 
         match index:
@@ -429,7 +429,7 @@ def messageLong():
         index = index - 1
         message = message + member["name"]
 
-        if member["pronouns"] is not None:
+        if "pronouns" in state.pkSystem and member["pronouns"] is not None:
             message = message + " ( " + member["pronouns"] + " )"
         
         message = message + "\nYou last fronted:\n" + str(pktools.rsLastSeen(member["id"], state.memberSeen))[:-10] + " ago\n"
