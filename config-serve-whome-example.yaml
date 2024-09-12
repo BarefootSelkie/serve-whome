@@ -1,3 +1,5 @@
+version: "20240912"
+
 updateInterval: 1
 
 data: "/home/serve/.whome"
@@ -6,21 +8,28 @@ pluralkit:
   token: 
   systemID: 
   zeropoint: "2000-01-01T00:00:00Z"
-  defaultFronter: 
-  updateInterval: 5
 
 discord:
   pingUserID: 
   full:
-    enabled: true
+    enabled: false
     token: 
     serverID: 
   filtered:
-    enabled: true
+    enabled: false
     token: 
     serverID: 
 
+mqtt:
+  enabled: false
+  server: 127.0.0.1
+  port: 1883
+  user: 
+  pass: 
 
+group:
+# group: [pkgroupids]
 
 covers:
 # group id: member id
+  default: 
