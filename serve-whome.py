@@ -431,13 +431,13 @@ def messageLong():
 
     if "pronouns" in state.pkSystem and member["pronouns"] is not None:
       message = message + " ( " + member["pronouns"] + " )"
-    
-    message = message + "\nYou last fronted:\n" + str(pktools.rsLastSeen(member["id"], state.memberSeen))[:-10] + " ago\n"
-    
-    message = message + str(pktools.hsTimeHuman(pktools.hsLastSeen(member["id"], state.memberSeen))) 
 
-    message = message + "\nYou last fronted:\n" + str(member["lastOut"]) 
-         
+    message = message + "\nYou last fronted:\n" + str(pktools.rsLastSeen(member["id"], state.memberSeen))[:-10] + " ago"
+
+    message = message + "\nAt:\n" + datetime.datetime.fromisoformat(member["lastOut"]).strftime("%H:%M on %A the %x")
+
+    message = message + "\nIn headpsace time:\n" + str(pktools.hsTimeHuman(pktools.hsLastSeen(member["id"], state.memberSeen))) 
+
     if index == 0:
       message = message + "\n---\n"
       message = message + "Current headspace time:\n" + str(pktools.hsTimeEasy(pktools.hsTimeNow(zeropoint)))
