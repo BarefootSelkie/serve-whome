@@ -434,7 +434,7 @@ def messageLong():
 
     message = message + "\nYou last fronted:\n" + str(pktools.rsLastSeen(member["id"], state.memberSeen))[:-10] + " ago"
 
-    message = message + "\nAt:\n" + datetime.datetime.fromisoformat(member["lastOut"]).strftime("%H:%M on %A ( %x )")
+    message = message + "\non: " + datetime.datetime.fromisoformat(member["lastOut"]).strftime("%A the %d of %B at %H:%M")
 
     message = message + "\nIn headpsace time:\n" + str(pktools.hsTimeHuman(pktools.hsLastSeen(member["id"], state.memberSeen))) 
 
