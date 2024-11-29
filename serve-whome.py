@@ -307,6 +307,7 @@ class pktState:
       element = elementlookup[member["uuid"]] if member["uuid"] in elementlookup else None 
       self.currentFronters["members"].append({
         "name": member["name"],
+        "displayName": member["display_name"],
         "id": member["id"],
         "pronouns": member["pronouns"],
         "cardSuit": card["name"] if card is not None else "",
@@ -402,7 +403,10 @@ def messageShort():
     index = index - 1
     
     if member["visible"]:
-      message = message + member["name"]
+      if member["displayName"]:
+        message = message + member["displayName"]
+      else:
+        message = message + member["name"]
       if member["pronouns"] is not None:
         message = message + " ( " + member["pronouns"] + " )"
     else:
@@ -427,7 +431,10 @@ def messageLong():
   for member in state.currentFronters["members"]:
 
     index = index - 1
-    message = message + member["name"]
+    if member["displayName"]:
+      message = message + member["displayName"]
+    else:
+      message = message + member["name"]
 
     if "pronouns" in state.pkSystem and member["pronouns"] is not None:
       message = message + " ( " + member["pronouns"] + " )"
