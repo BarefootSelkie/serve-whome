@@ -341,6 +341,8 @@ class pktState:
         "name": member["name"],
         "id": member["id"],
         "pronouns": member["pronouns"],
+        "displayName": member["display_name"],
+        "avatarUrl": member["avatar_url"],
         "cardSuit": card["name"] if card is not None else "",
         "cardId": card["id"] if card is not None else "",
         "elementName": element["name"] if element is not None else "",
