@@ -307,7 +307,7 @@ class pktState:
       element = elementlookup[member["uuid"]] if member["uuid"] in elementlookup else None 
       self.currentFronters["members"].append({
         "name": member["name"],
-        "displayName": member["display_name"],
+        "displayName": member["display_name"] if member["display_name"] is not None else member["name"],
         "id": member["id"],
         "pronouns": member["pronouns"],
         "cardSuit": card["name"] if card is not None else "",
@@ -341,7 +341,7 @@ class pktState:
         "name": member["name"],
         "id": member["id"],
         "pronouns": member["pronouns"],
-        "displayName": member["display_name"],
+        "displayName": member["display_name"] if member["display_name"] is not None else member["name"],
         "avatarUrl": member["avatar_url"],
         "cardSuit": card["name"] if card is not None else "",
         "cardId": card["id"] if card is not None else "",
