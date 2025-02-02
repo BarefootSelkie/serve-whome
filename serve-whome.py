@@ -356,6 +356,7 @@ class pktState:
         "elementName": element["name"] if element is not None else "",
         "elementId": element["id"] if element is not None else "",
         "visible": self.checkVisible(member),
+        "lastSeen": str(pktools.rsLastSeen(member["id"], state.memberSeen))[:-10]
         "tag": tag
       })
 
