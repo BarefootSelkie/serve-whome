@@ -337,6 +337,14 @@ class pktState:
 
       card = cardlookup[member["uuid"]] if member["uuid"] in cardlookup else None 
       element = elementlookup[member["uuid"]] if member["uuid"] in elementlookup else None 
+      
+      # Work out proxy tag
+      tag = ""
+      for tag in member["proxy_tags"]:
+        if tag["suffix"]:
+          tag = tag["suffix"]
+          break
+      
       self.memberList.append({
         "name": member["name"],
         "id": member["id"],
@@ -347,7 +355,8 @@ class pktState:
         "cardId": card["id"] if card is not None else "",
         "elementName": element["name"] if element is not None else "",
         "elementId": element["id"] if element is not None else "",
-        "visible": self.checkVisible(member)
+        "visible": self.checkVisible(member),
+        "tag": tag
       })
 
 
