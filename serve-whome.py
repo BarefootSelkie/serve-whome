@@ -212,15 +212,20 @@ class pktState:
 
 ### Member Last Seen Logic ###
 
-  # Given a batch of switches, updates the MemberSeen data
-  # Returns: timestamp of the oldest switch that was input
-  def updateMemberSeen(self, switches):
-
+  def checkMemberSeen(self):
     # Ensure the MemberSeen object has an entry for all system members
     for member in self.pkMembers:
       if member["id"].strip() not in self.memberSeen.keys():
         self.memberSeen[member["id"].strip()] = {"lastIn": zeropoint, "lastOut": zeropoint}  
 
+
+  # Given a batch of switches, updates the MemberSeen data
+  # Returns: timestamp of the oldest switch that was input
+  def updateMemberSeen(self, switches):
+
+    # Ensure the MemberSeen object has an entry for all system members
+    self.checkMemberSeen()
+    
     # Switches are currently in reverse chronological order - make them in chronological order instead
     switches.reverse()
 
@@ -539,6 +544,9 @@ while True:
     time.sleep(1)
     state.makeApiCallPkGroups()
     state.savePkGroups()
+    time.sleep(1)
+    state.checkMemberSeen()
+    state.saveMemberSeen()
     time.sleep(1)
     state.makeApiCallLastSwitch()
     state.saveLastSwitch()
