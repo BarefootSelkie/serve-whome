@@ -586,5 +586,20 @@ while True:
           if config["discord"]["filtered"]["enabled"]:
             message = messageShort()
             messageSend(message, "filtered")
-            
+      else:
+        # If anyone is currently switched in
+        if len(state.lastSwitch["members"]) > 0:
+
+          # Check if the current set of fronters have been around for a while and need switching out automatically
+          timeSinceSwitch = datetime.datetime.utcnow() - datetime.datetime.fromisoformat(state.lastSwitch["timestamp"])
+
+          if config["timeout"] and (timeSinceSwitch.total_seconds() > config["timeout"] * 60):
+            # Switch the current member(s) out
+              try:
+                requests.post("https://api.pluralkit.me/v2/systems/" + systemid + "/switches",  headers={'Authorization':pktoken}, json={'members':[]})
+              except requests.exceptions.RequestException as e:
+                # Fail silently
+                logging.warning("Unable to swtich out")
+                logging.warning(e)
+
   time.sleep(10)

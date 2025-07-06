@@ -1,6 +1,7 @@
 version: "20240912"
 
 updateInterval: 1
+timeout: 120 # time in minutes
 
 data: "/home/serve/.whome"
 
