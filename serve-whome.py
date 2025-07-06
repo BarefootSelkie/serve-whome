@@ -591,7 +591,7 @@ while True:
         if len(state.lastSwitch["members"]) > 0:
 
           # Check if the current set of fronters have been around for a while and need switching out automatically
-          timeSinceSwitch = datetime.datetime.now(timezone.utc) - datetime.datetime.fromisoformat(state.lastSwitch["timestamp"])
+          timeSinceSwitch = datetime.datetime.now(datetime.timezone.utc) - datetime.datetime.fromisoformat(state.lastSwitch["timestamp"])
 
           if config["timeout"] and (timeSinceSwitch.total_seconds() > config["timeout"] * 60):
             # Switch the current member(s) out
