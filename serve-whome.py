@@ -594,6 +594,9 @@ while True:
           timeSinceSwitch = datetime.datetime.now(datetime.timezone.utc) - datetime.datetime.fromisoformat(state.lastSwitch["timestamp"])
 
           if config["timeout"] and (timeSinceSwitch.total_seconds() > config["timeout"] * 60):
+            # Send a discord message
+            messageSend("Current fronters have been switched in more than " + config["timeout"] + " minutes, switching out automatically.", "full")
+
             # Switch the current member(s) out
               try:
                 requests.post("https://api.pluralkit.me/v2/systems/" + systemid + "/switches",  headers={'Authorization':pktoken}, json={'members':[]})
