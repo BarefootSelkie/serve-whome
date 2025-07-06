@@ -595,7 +595,7 @@ while True:
 
           if config["timeout"] and (timeSinceSwitch.total_seconds() > config["timeout"] * 60):
             # Send a discord message
-            messageSend("Current fronters have been switched in more than " + config["timeout"] + " minutes, switching out automatically.", "full")
+            messageSend("Current fronters have been switched in more than " + str(config["timeout"]) + " minutes, switching out automatically.", "full")
 
             # Switch the current member(s) out
             try:
